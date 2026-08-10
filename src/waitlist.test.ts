@@ -14,6 +14,18 @@ describe('WaitlistSignupRequest', () => {
   it('rejects a non-string email', () => {
     expect(WaitlistSignupRequestSchema.safeParse({ email: 42 }).success).toBe(false);
   });
+
+  it('accepts an address at the RFC 5321 limit of 254 characters', () => {
+    const email = `${'a'.repeat(242)}@example.com`;
+    expect(email).toHaveLength(254);
+    expect(WaitlistSignupRequestSchema.safeParse({ email }).success).toBe(true);
+  });
+
+  it('rejects an address one character over the limit', () => {
+    const email = `${'a'.repeat(243)}@example.com`;
+    expect(email).toHaveLength(255);
+    expect(WaitlistSignupRequestSchema.safeParse({ email }).success).toBe(false);
+  });
 });
 
 describe('WaitlistSignupResponse', () => {
