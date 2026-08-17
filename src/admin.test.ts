@@ -29,11 +29,15 @@ describe('AdminWaitlistQuery', () => {
   });
 
   it('rejects a status outside the enum', () => {
-    expect(AdminWaitlistQuerySchema.safeParse({ status: 'waiting' }).success).toBe(false);
+    expect(
+      AdminWaitlistQuerySchema.safeParse({ status: 'waiting' }).success,
+    ).toBe(false);
   });
 
   it('rejects an empty cursor', () => {
-    expect(AdminWaitlistQuerySchema.safeParse({ cursor: '' }).success).toBe(false);
+    expect(AdminWaitlistQuerySchema.safeParse({ cursor: '' }).success).toBe(
+      false,
+    );
   });
 });
 
@@ -58,7 +62,9 @@ describe('AdminWaitlistRow', () => {
     ['an offset-bearing createdAt', { createdAt: '2026-08-02T12:00:00+02:00' }],
     ['an unknown source', { source: 'github' }],
   ])('rejects %s', (_why, override) => {
-    expect(AdminWaitlistRowSchema.safeParse({ ...row, ...override }).success).toBe(false);
+    expect(
+      AdminWaitlistRowSchema.safeParse({ ...row, ...override }).success,
+    ).toBe(false);
   });
 });
 
@@ -73,7 +79,9 @@ describe('AdminWaitlistResponse', () => {
   };
 
   it('accepts an empty last page with no cursor', () => {
-    expect(AdminWaitlistResponseSchema.parse({ rows: [] })).toEqual({ rows: [] });
+    expect(AdminWaitlistResponseSchema.parse({ rows: [] })).toEqual({
+      rows: [],
+    });
   });
 
   it('accepts a populated page carrying the next cursor', () => {
@@ -83,7 +91,13 @@ describe('AdminWaitlistResponse', () => {
 });
 
 describe('WaitlistStatsResponse', () => {
-  const stats = { all: 214, subscribed: 201, paused: 9, unsubscribed: 3, bounced: 1 };
+  const stats = {
+    all: 214,
+    subscribed: 201,
+    paused: 9,
+    unsubscribed: 3,
+    bounced: 1,
+  };
 
   it('accepts a count for every status plus the aggregate', () => {
     expect(WaitlistStatsResponseSchema.parse(stats)).toEqual(stats);
@@ -96,6 +110,8 @@ describe('WaitlistStatsResponse', () => {
   });
 
   it('rejects a negative count', () => {
-    expect(WaitlistStatsResponseSchema.safeParse({ ...stats, paused: -1 }).success).toBe(false);
+    expect(
+      WaitlistStatsResponseSchema.safeParse({ ...stats, paused: -1 }).success,
+    ).toBe(false);
   });
 });

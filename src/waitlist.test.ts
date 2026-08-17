@@ -9,15 +9,24 @@ import {
 
 describe('WaitlistSignupRequest', () => {
   it('lowercases and trims the email', () => {
-    expect(WaitlistSignupRequestSchema.parse({ email: '  A@B.CO ' })).toEqual({ email: 'a@b.co' });
+    expect(WaitlistSignupRequestSchema.parse({ email: '  A@B.CO ' })).toEqual({
+      email: 'a@b.co',
+    });
   });
 
-  it.each(['not-an-email', '', '   ', 'a@b', 'a b@c.co'])('rejects %j', (email) => {
-    expect(WaitlistSignupRequestSchema.safeParse({ email }).success).toBe(false);
-  });
+  it.each(['not-an-email', '', '   ', 'a@b', 'a b@c.co'])(
+    'rejects %j',
+    (email) => {
+      expect(WaitlistSignupRequestSchema.safeParse({ email }).success).toBe(
+        false,
+      );
+    },
+  );
 
   it('rejects a non-string email', () => {
-    expect(WaitlistSignupRequestSchema.safeParse({ email: 42 }).success).toBe(false);
+    expect(WaitlistSignupRequestSchema.safeParse({ email: 42 }).success).toBe(
+      false,
+    );
   });
 
   it('accepts an address at the RFC 5321 limit of 254 characters', () => {
@@ -29,7 +38,9 @@ describe('WaitlistSignupRequest', () => {
   it('rejects an address one character over the limit', () => {
     const email = `${'a'.repeat(243)}@example.com`;
     expect(email).toHaveLength(255);
-    expect(WaitlistSignupRequestSchema.safeParse({ email }).success).toBe(false);
+    expect(WaitlistSignupRequestSchema.safeParse({ email }).success).toBe(
+      false,
+    );
   });
 });
 
@@ -55,7 +66,10 @@ describe.each([
 
   it.each([
     ['a non-ISO subscribedAt', { subscribedAt: 'yesterday' }],
-    ['a local-offset subscribedAt', { subscribedAt: '2026-08-02T12:00:00+02:00' }],
+    [
+      'a local-offset subscribedAt',
+      { subscribedAt: '2026-08-02T12:00:00+02:00' },
+    ],
     ['an unknown status', { status: 'waiting' }],
     ['a malformed email', { email: 'not-an-email' }],
   ])('rejects %s', (_why, override) => {
@@ -63,16 +77,22 @@ describe.each([
   });
 
   it('drops the queue rank, which is no longer part of the response', () => {
-    expect(schema.parse({ ...valid, position: 214 })).not.toHaveProperty('position');
+    expect(schema.parse({ ...valid, position: 214 })).not.toHaveProperty(
+      'position',
+    );
   });
 });
 
 describe('ManageActionResponse', () => {
   it('carries only the resulting status', () => {
-    expect(ManageActionResponseSchema.parse({ status: 'paused' })).toEqual({ status: 'paused' });
+    expect(ManageActionResponseSchema.parse({ status: 'paused' })).toEqual({
+      status: 'paused',
+    });
   });
 
   it('rejects an unknown status', () => {
-    expect(ManageActionResponseSchema.safeParse({ status: 'gone' }).success).toBe(false);
+    expect(
+      ManageActionResponseSchema.safeParse({ status: 'gone' }).success,
+    ).toBe(false);
   });
 });

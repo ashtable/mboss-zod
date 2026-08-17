@@ -45,9 +45,10 @@ describe('InternalBroadcastResponse', () => {
   });
 
   it('rejects an empty audience', () => {
-    expect(InternalBroadcastResponseSchema.safeParse({ ...broadcast, audience: [] }).success).toBe(
-      false,
-    );
+    expect(
+      InternalBroadcastResponseSchema.safeParse({ ...broadcast, audience: [] })
+        .success,
+    ).toBe(false);
   });
 });
 
@@ -57,7 +58,9 @@ describe('InternalRecipientsQuery', () => {
   });
 
   it('rejects an empty cursor', () => {
-    expect(InternalRecipientsQuerySchema.safeParse({ cursor: '' }).success).toBe(false);
+    expect(
+      InternalRecipientsQuerySchema.safeParse({ cursor: '' }).success,
+    ).toBe(false);
   });
 });
 
@@ -78,7 +81,9 @@ describe('InternalRecipient', () => {
     ['a fractional token version', { tokenVersion: 1.5 }],
     ['a malformed email', { email: 'not-an-email' }],
   ])('rejects %s', (_why, override) => {
-    expect(InternalRecipientSchema.safeParse({ ...recipient, ...override }).success).toBe(false);
+    expect(
+      InternalRecipientSchema.safeParse({ ...recipient, ...override }).success,
+    ).toBe(false);
   });
 });
 
@@ -91,7 +96,9 @@ describe('InternalRecipientsResponse', () => {
   };
 
   it('accepts a last page with no cursor', () => {
-    expect(InternalRecipientsResponseSchema.parse({ rows: [recipient] })).toEqual({
+    expect(
+      InternalRecipientsResponseSchema.parse({ rows: [recipient] }),
+    ).toEqual({
       rows: [recipient],
     });
   });
@@ -106,36 +113,55 @@ describe('DeliveryFlipRequest', () => {
   const flip = { subscriberId: 'ckv1', status: 'sent' };
 
   it.each(['sent', 'failed', 'skipped'])('accepts a flip to %s', (status) => {
-    expect(DeliveryFlipRequestSchema.parse({ ...flip, status }).status).toBe(status);
-  });
-
-  it('rejects a flip back to pending, which is never something a worker asks for', () => {
-    expect(DeliveryFlipRequestSchema.safeParse({ ...flip, status: 'pending' }).success).toBe(false);
-  });
-
-  it('accepts an optional error message', () => {
-    expect(DeliveryFlipRequestSchema.parse({ ...flip, error: 'bounced' }).error).toBe('bounced');
-  });
-
-  it('rejects an error message over 2000 characters', () => {
-    expect(DeliveryFlipRequestSchema.safeParse({ ...flip, error: 'a'.repeat(2001) }).success).toBe(
-      false,
+    expect(DeliveryFlipRequestSchema.parse({ ...flip, status }).status).toBe(
+      status,
     );
   });
 
+  it('rejects a flip back to pending, which is never something a worker asks for', () => {
+    expect(
+      DeliveryFlipRequestSchema.safeParse({ ...flip, status: 'pending' })
+        .success,
+    ).toBe(false);
+  });
+
+  it('accepts an optional error message', () => {
+    expect(
+      DeliveryFlipRequestSchema.parse({ ...flip, error: 'bounced' }).error,
+    ).toBe('bounced');
+  });
+
+  it('rejects an error message over 2000 characters', () => {
+    expect(
+      DeliveryFlipRequestSchema.safeParse({ ...flip, error: 'a'.repeat(2001) })
+        .success,
+    ).toBe(false);
+  });
+
   it('rejects an empty subscriberId', () => {
-    expect(DeliveryFlipRequestSchema.safeParse({ ...flip, subscriberId: '' }).success).toBe(false);
+    expect(
+      DeliveryFlipRequestSchema.safeParse({ ...flip, subscriberId: '' })
+        .success,
+    ).toBe(false);
   });
 });
 
 describe('DeliveryFlipResponse', () => {
-  it.each(['pending', 'sent', 'failed', 'skipped'])('reports the resulting status %s', (status) => {
-    expect(DeliveryFlipResponseSchema.parse({ status })).toEqual({ status });
-  });
+  it.each(['pending', 'sent', 'failed', 'skipped'])(
+    'reports the resulting status %s',
+    (status) => {
+      expect(DeliveryFlipResponseSchema.parse({ status })).toEqual({ status });
+    },
+  );
 });
 
 describe('BroadcastCompleteResponse', () => {
-  const complete = { status: 'sent', sentCount: 200, failedCount: 1, skippedCount: 13 };
+  const complete = {
+    status: 'sent',
+    sentCount: 200,
+    failedCount: 1,
+    skippedCount: 13,
+  };
 
   it('accepts the final status and the three delivery totals', () => {
     expect(BroadcastCompleteResponseSchema.parse(complete)).toEqual(complete);
@@ -144,46 +170,66 @@ describe('BroadcastCompleteResponse', () => {
   it('rejects a missing count', () => {
     const missing: Partial<typeof complete> = { ...complete };
     delete missing.skippedCount;
-    expect(BroadcastCompleteResponseSchema.safeParse(missing).success).toBe(false);
+    expect(BroadcastCompleteResponseSchema.safeParse(missing).success).toBe(
+      false,
+    );
   });
 });
 
 describe('ConfirmationSentResponse', () => {
   it('returns the timestamp the send was recorded at', () => {
-    expect(ConfirmationSentResponseSchema.parse({ confirmationEmailSentAt: ISO })).toEqual({
+    expect(
+      ConfirmationSentResponseSchema.parse({ confirmationEmailSentAt: ISO }),
+    ).toEqual({
       confirmationEmailSentAt: ISO,
     });
   });
 
   it('rejects a non-ISO timestamp', () => {
     expect(
-      ConfirmationSentResponseSchema.safeParse({ confirmationEmailSentAt: 'yesterday' }).success,
+      ConfirmationSentResponseSchema.safeParse({
+        confirmationEmailSentAt: 'yesterday',
+      }).success,
     ).toBe(false);
   });
 });
 
 describe('EmailEvent', () => {
-  const event = { email: '  PAT@STMARKS.ORG ', event: 'bounce', timestamp: 1755212345 };
+  const event = {
+    email: '  PAT@STMARKS.ORG ',
+    event: 'bounce',
+    timestamp: 1755212345,
+  };
 
   it('lowercases and trims the address', () => {
     expect(EmailEventSchema.parse(event).email).toBe('pat@stmarks.org');
   });
 
   it.each(['bounce', 'spamreport'])('accepts a %s event', (name) => {
-    expect(EmailEventSchema.safeParse({ ...event, event: name }).success).toBe(true);
+    expect(EmailEventSchema.safeParse({ ...event, event: name }).success).toBe(
+      true,
+    );
   });
 
   it.each(['delivered', 'open', 'dropped'])('rejects a %s event', (name) => {
-    expect(EmailEventSchema.safeParse({ ...event, event: name }).success).toBe(false);
+    expect(EmailEventSchema.safeParse({ ...event, event: name }).success).toBe(
+      false,
+    );
   });
 
   it.each([-1, 1.5])('rejects the timestamp %j', (timestamp) => {
-    expect(EmailEventSchema.safeParse({ ...event, timestamp }).success).toBe(false);
+    expect(EmailEventSchema.safeParse({ ...event, timestamp }).success).toBe(
+      false,
+    );
   });
 });
 
 describe('EmailEventsRequest', () => {
-  const event = { email: 'pat@stmarks.org', event: 'bounce', timestamp: 1755212345 };
+  const event = {
+    email: 'pat@stmarks.org',
+    event: 'bounce',
+    timestamp: 1755212345,
+  };
 
   it('accepts a single-event batch', () => {
     expect(EmailEventsRequestSchema.parse([event])).toHaveLength(1);
@@ -200,7 +246,9 @@ describe('EmailEventsRequest', () => {
 
 describe('EmailEventsResponse', () => {
   it('reports how many events were processed and how many bounced', () => {
-    expect(EmailEventsResponseSchema.parse({ processed: 2, bounced: 1 })).toEqual({
+    expect(
+      EmailEventsResponseSchema.parse({ processed: 2, bounced: 1 }),
+    ).toEqual({
       processed: 2,
       bounced: 1,
     });
@@ -218,7 +266,9 @@ describe('InternalSubscriberResponse', () => {
   };
 
   it('accepts a subscriber who has not been sent a confirmation yet', () => {
-    expect(InternalSubscriberResponseSchema.parse(subscriber)).toEqual(subscriber);
+    expect(InternalSubscriberResponseSchema.parse(subscriber)).toEqual(
+      subscriber,
+    );
   });
 
   it('accepts a subscriber who has', () => {
@@ -228,7 +278,10 @@ describe('InternalSubscriberResponse', () => {
 
   it('rejects a token version below one', () => {
     expect(
-      InternalSubscriberResponseSchema.safeParse({ ...subscriber, tokenVersion: 0 }).success,
+      InternalSubscriberResponseSchema.safeParse({
+        ...subscriber,
+        tokenVersion: 0,
+      }).success,
     ).toBe(false);
   });
 });
