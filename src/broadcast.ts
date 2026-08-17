@@ -10,7 +10,6 @@ const subjectSchema = z.string().trim().min(1).max(200);
 const bodyMarkdownSchema = z.string().trim().min(1).max(20_000);
 
 /**
-/**
  * `POST /v1/admin/broadcasts`.
  *
  * `audience` is an array rather than a single status because a broadcast goes to subscribers and,

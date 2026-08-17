@@ -73,6 +73,5 @@ void [
   badSource,
   badPosition,
   badDate,
-
   badEvent,
 ];
