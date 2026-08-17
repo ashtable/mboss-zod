@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { WaitlistSignupRequestSchema, WaitlistSignupResponseSchema } from './waitlist.js';
+import {
+  ManageActionResponseSchema,
+  ManageStateResponseSchema,
+  WaitlistSignupRequestSchema,
+  WaitlistSignupResponseSchema,
+} from './waitlist.js';
 
 describe('WaitlistSignupRequest', () => {
   it('lowercases and trims the email', () => {
@@ -28,23 +33,46 @@ describe('WaitlistSignupRequest', () => {
   });
 });
 
-describe('WaitlistSignupResponse', () => {
-  it('accepts a positive integer position and an ISO-8601 UTC joinedAt', () => {
-    const joinedAt = new Date('2026-08-10T12:00:00Z').toISOString();
-    expect(WaitlistSignupResponseSchema.parse({ position: 214, joinedAt })).toEqual({
-      position: 214,
-      joinedAt,
-    });
+describe.each([
+  ['WaitlistSignupResponse', WaitlistSignupResponseSchema],
+  ['ManageStateResponse', ManageStateResponseSchema],
+] as const)('%s', (_name, schema) => {
+  const valid = {
+    email: 'pat@stmarks.org',
+    status: 'subscribed',
+    subscribedAt: new Date('2026-08-02T12:00:00Z').toISOString(),
+  };
+
+  it('accepts an email, a status and a subscribedAt timestamp', () => {
+    expect(schema.parse(valid)).toEqual(valid);
   });
 
-  it.each([0, -1, 1.5])('rejects position %j', (position) => {
-    const joinedAt = new Date().toISOString();
-    expect(WaitlistSignupResponseSchema.safeParse({ position, joinedAt }).success).toBe(false);
+  it('accepts every subscriber status', () => {
+    for (const status of ['subscribed', 'paused', 'unsubscribed', 'bounced']) {
+      expect(schema.safeParse({ ...valid, status }).success).toBe(true);
+    }
   });
 
-  it('rejects a non-ISO joinedAt', () => {
-    expect(
-      WaitlistSignupResponseSchema.safeParse({ position: 1, joinedAt: 'yesterday' }).success,
-    ).toBe(false);
+  it.each([
+    ['a non-ISO subscribedAt', { subscribedAt: 'yesterday' }],
+    ['a local-offset subscribedAt', { subscribedAt: '2026-08-02T12:00:00+02:00' }],
+    ['an unknown status', { status: 'waiting' }],
+    ['a malformed email', { email: 'not-an-email' }],
+  ])('rejects %s', (_why, override) => {
+    expect(schema.safeParse({ ...valid, ...override }).success).toBe(false);
+  });
+
+  it('drops the queue rank, which is no longer part of the response', () => {
+    expect(schema.parse({ ...valid, position: 214 })).not.toHaveProperty('position');
+  });
+});
+
+describe('ManageActionResponse', () => {
+  it('carries only the resulting status', () => {
+    expect(ManageActionResponseSchema.parse({ status: 'paused' })).toEqual({ status: 'paused' });
+  });
+
+  it('rejects an unknown status', () => {
+    expect(ManageActionResponseSchema.safeParse({ status: 'gone' }).success).toBe(false);
   });
 });

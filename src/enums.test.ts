@@ -1,17 +1,17 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  IdentitySourceSchema,
-  SerialKeyStatusSchema,
-  UserRoleSchema,
-  UserStatusSchema,
+  BroadcastStatusSchema,
+  DeliveryStatusSchema,
+  SubscriberSourceSchema,
+  SubscriberStatusSchema,
 } from './enums.js';
 
 describe.each([
-  ['UserStatus', UserStatusSchema, ['waiting', 'invited', 'active', 'disabled']],
-  ['IdentitySource', IdentitySourceSchema, ['email', 'github']],
-  ['UserRole', UserRoleSchema, ['user', 'admin']],
-  ['SerialKeyStatus', SerialKeyStatusSchema, ['active', 'revoked']],
+  ['SubscriberStatus', SubscriberStatusSchema, ['subscribed', 'paused', 'unsubscribed', 'bounced']],
+  ['SubscriberSource', SubscriberSourceSchema, ['email', 'admin']],
+  ['BroadcastStatus', BroadcastStatusSchema, ['draft', 'sending', 'sent', 'failed']],
+  ['DeliveryStatus', DeliveryStatusSchema, ['pending', 'sent', 'failed', 'skipped']],
 ] as const)('%s', (_name, schema, members) => {
   it('exposes exactly the Prisma enum members, in order', () => {
     expect(schema.options).toEqual(members);
