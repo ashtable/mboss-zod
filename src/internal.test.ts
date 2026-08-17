@@ -23,9 +23,13 @@ describe('EmptyBody', () => {
     expect(EmptyBodySchema.parse({})).toEqual({});
   });
 
-  it('strips an unknown key rather than rejecting it, so a future field is additive', () => {
-    expect(EmptyBodySchema.parse({ stray: 1 })).toEqual({});
-  });
+  it(
+    'strips an unknown key rather than rejecting it, ' +
+      'so a future field is additive',
+    () => {
+      expect(EmptyBodySchema.parse({ stray: 1 })).toEqual({});
+    },
+  );
 });
 
 describe('InternalBroadcastResponse', () => {
@@ -40,9 +44,14 @@ describe('InternalBroadcastResponse', () => {
     createdAt: ISO,
   };
 
-  it('accepts a broadcast with no teaser image and no recipient count yet', () => {
-    expect(InternalBroadcastResponseSchema.parse(broadcast)).toEqual(broadcast);
-  });
+  it(
+    'accepts a broadcast with no teaser image ' + 'and no recipient count yet',
+    () => {
+      expect(InternalBroadcastResponseSchema.parse(broadcast)).toEqual(
+        broadcast,
+      );
+    },
+  );
 
   it('rejects an empty audience', () => {
     expect(
@@ -72,9 +81,13 @@ describe('InternalRecipient', () => {
     currentStatus: 'subscribed',
   };
 
-  it('accepts a recipient carrying the token version and the current status', () => {
-    expect(InternalRecipientSchema.parse(recipient)).toEqual(recipient);
-  });
+  it(
+    'accepts a recipient carrying the token version ' +
+      'and the current status',
+    () => {
+      expect(InternalRecipientSchema.parse(recipient)).toEqual(recipient);
+    },
+  );
 
   it.each([
     ['a token version below one', { tokenVersion: 0 }],
@@ -118,12 +131,16 @@ describe('DeliveryFlipRequest', () => {
     );
   });
 
-  it('rejects a flip back to pending, which is never something a worker asks for', () => {
-    expect(
-      DeliveryFlipRequestSchema.safeParse({ ...flip, status: 'pending' })
-        .success,
-    ).toBe(false);
-  });
+  it(
+    'rejects a flip back to pending, which is never ' +
+      'something a worker asks for',
+    () => {
+      expect(
+        DeliveryFlipRequestSchema.safeParse({ ...flip, status: 'pending' })
+          .success,
+      ).toBe(false);
+    },
+  );
 
   it('accepts an optional error message', () => {
     expect(

@@ -50,13 +50,21 @@ const create: CreateBroadcastRequest = {
   audience: ['subscribed'],
 };
 
-// @ts-expect-error 'waiting' was an invite-gate status; it is not a SubscriberStatus member
+// @ts-expect-error 'waiting' was an
+// invite-gate status; it is not a
+// SubscriberStatus member
 const badStatus: SubscriberStatus = 'waiting';
-// @ts-expect-error 'github' was an identity source; SubscriberSource has no such member
+
+// @ts-expect-error 'github' was an identity
+// source; SubscriberSource has no such member
 const badSource: SubscriberSource = 'github';
-// @ts-expect-error the queue rank is no longer part of the signup response
+
+// @ts-expect-error the queue rank is no longer
+// part of the signup response
 const badPosition: WaitlistSignupResponse['position'] = 214;
-// @ts-expect-error subscribedAt is a string, not a Date
+
+// @ts-expect-error subscribedAt is a string,
+// not a Date
 const badDate: WaitlistSignupResponse['subscribedAt'] = new Date();
 // There is deliberately no
 // compile-time assertion that the
@@ -67,7 +75,8 @@ const badDate: WaitlistSignupResponse['subscribedAt'] = new Date();
 // and only parsing rejects it. The
 // runtime tests are what pin that
 // rule.
-// @ts-expect-error 'delivered' is not one of the two forwarded event types
+// @ts-expect-error 'delivered' is not one of
+// the two forwarded event types
 const badEvent: EmailEvent['event'] = 'delivered';
 
 export type {};
