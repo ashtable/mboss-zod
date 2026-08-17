@@ -1,6 +1,10 @@
 /**
- * Compile-time contract for the inferred types. `tsc --noEmit` (part of `npm run lint`) is the
- * assertion: every `@ts-expect-error` below fails the build if the error it expects disappears.
+ * Compile-time contract for the
+ * inferred types. `tsc --noEmit` (part
+ * of `npm run lint`) is the assertion:
+ * every `@ts-expect-error` below fails
+ * the build if the error it expects
+ * disappears.
  */
 import type {
   AdminWaitlistResponse,
@@ -35,7 +39,11 @@ const stats: WaitlistStatsResponse = {
   bounced: 1,
 };
 const rows: AdminWaitlistResponse = { rows: [] };
-const event: EmailEvent = { email: 'a@b.co', event: 'bounce', timestamp: 1755212345 };
+const event: EmailEvent = {
+  email: 'a@b.co',
+  event: 'bounce',
+  timestamp: 1755212345,
+};
 const create: CreateBroadcastRequest = {
   subject: 'Progress update #3',
   bodyMarkdown: 'the canvas is alive',
@@ -50,9 +58,15 @@ const badSource: SubscriberSource = 'github';
 const badPosition: WaitlistSignupResponse['position'] = 214;
 // @ts-expect-error subscribedAt is a string, not a Date
 const badDate: WaitlistSignupResponse['subscribedAt'] = new Date();
-// There is deliberately no compile-time assertion that the audience is non-empty. `.nonempty()`
-// infers as a plain array here, not as `[T, ...T[]]`, so an empty literal is assignable and only
-// parsing rejects it. The runtime tests are what pin that rule.
+// There is deliberately no
+// compile-time assertion that the
+// audience is non-empty.
+// `.nonempty()` infers as a plain
+// array here, not as `[T, ...T[]]`,
+// so an empty literal is assignable
+// and only parsing rejects it. The
+// runtime tests are what pin that
+// rule.
 // @ts-expect-error 'delivered' is not one of the two forwarded event types
 const badEvent: EmailEvent['event'] = 'delivered';
 

@@ -8,10 +8,22 @@ import {
 } from './enums.js';
 
 describe.each([
-  ['SubscriberStatus', SubscriberStatusSchema, ['subscribed', 'paused', 'unsubscribed', 'bounced']],
+  [
+    'SubscriberStatus',
+    SubscriberStatusSchema,
+    ['subscribed', 'paused', 'unsubscribed', 'bounced'],
+  ],
   ['SubscriberSource', SubscriberSourceSchema, ['email', 'admin']],
-  ['BroadcastStatus', BroadcastStatusSchema, ['draft', 'sending', 'sent', 'failed']],
-  ['DeliveryStatus', DeliveryStatusSchema, ['pending', 'sent', 'failed', 'skipped']],
+  [
+    'BroadcastStatus',
+    BroadcastStatusSchema,
+    ['draft', 'sending', 'sent', 'failed'],
+  ],
+  [
+    'DeliveryStatus',
+    DeliveryStatusSchema,
+    ['pending', 'sent', 'failed', 'skipped'],
+  ],
 ] as const)('%s', (_name, schema, members) => {
   it('exposes exactly the Prisma enum members, in order', () => {
     expect(schema.options).toEqual(members);
