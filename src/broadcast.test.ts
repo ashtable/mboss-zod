@@ -178,9 +178,13 @@ describe('BroadcastListRow', () => {
     createdBy: 'ash@mboss.dev',
   };
 
-  it('accepts a null recipientCount, which a draft has until its delivery rows exist', () => {
-    expect(BroadcastListRowSchema.parse(row)).toEqual(row);
-  });
+  it(
+    'accepts a null recipientCount, which a draft has ' +
+      'until its delivery rows exist',
+    () => {
+      expect(BroadcastListRowSchema.parse(row)).toEqual(row);
+    },
+  );
 
   it('rejects a negative recipientCount', () => {
     expect(
