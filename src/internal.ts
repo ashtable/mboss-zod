@@ -160,22 +160,29 @@ export type ConfirmationSentResponse = z.infer<
 >;
 
 /**
- * The only two provider event types
- * the web layer forwards. Deliberately
- * narrow: widening this is a schema
- * change with a test behind it, not a
- * silent surprise.
+ * The one event type any caller can
+ * report. The worker's own bounce scan
+ * is the only one there is, and a
+ * bounce is all it can see: spam
+ * reports have no surface on this
+ * provider to read. Deliberately
+ * narrow:
+ * widening this is a schema change
+ * with a test behind it, not a silent
+ * surprise. A one-member enum rather
+ * than a literal so that widening
+ * leaves the field's shape alone.
  */
-export const EmailEventTypeSchema = z.enum(['bounce', 'spamreport']);
+export const EmailEventTypeSchema = z.enum(['bounce']);
 export type EmailEventType = z.infer<typeof EmailEventTypeSchema>;
 
 /**
  * `POST /internal/v1/email-events` — a
- * batch forwarded from the email
- * provider's webhook, so `timestamp`
- * is that provider's epoch seconds.
- * The API converts it when stamping
- * the subscriber's bounce time.
+ * batch of addresses the sender found
+ * undeliverable. `timestamp` is epoch
+ * seconds, which the API converts when
+ * stamping the subscriber's bounce
+ * time.
  */
 export const EmailEventSchema = z.object({
   email: emailSchema,
@@ -185,17 +192,18 @@ export const EmailEventSchema = z.object({
 export type EmailEvent = z.infer<typeof EmailEventSchema>;
 
 /**
- * A webhook delivery batches events,
- * so the wire body is an array.
+ * One scan finds several bad addresses
+ * at a time, so the wire body is an
+ * array.
  */
 export const EmailEventsRequestSchema = z.array(EmailEventSchema).nonempty();
 export type EmailEventsRequest = z.infer<typeof EmailEventsRequestSchema>;
 
 /**
  * `bounced` is a subset of
- * `processed`: a `spamreport` event
- * processes but does not bounce
- * anyone.
+ * `processed`: an address the API does
+ * not have is processed and bounces
+ * nobody.
  */
 export const EmailEventsResponseSchema = z.object({
   processed: countSchema,

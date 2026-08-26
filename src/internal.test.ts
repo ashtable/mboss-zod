@@ -222,17 +222,18 @@ describe('EmailEvent', () => {
     expect(EmailEventSchema.parse(event).email).toBe('pat@stmarks.org');
   });
 
-  it.each(['bounce', 'spamreport'])('accepts a %s event', (name) => {
-    expect(EmailEventSchema.safeParse({ ...event, event: name }).success).toBe(
-      true,
-    );
+  it('accepts a bounce event', () => {
+    expect(EmailEventSchema.safeParse(event).success).toBe(true);
   });
 
-  it.each(['delivered', 'open', 'dropped'])('rejects a %s event', (name) => {
-    expect(EmailEventSchema.safeParse({ ...event, event: name }).success).toBe(
-      false,
-    );
-  });
+  it.each(['delivered', 'open', 'dropped', 'spamreport'])(
+    'rejects a %s event',
+    (name) => {
+      expect(
+        EmailEventSchema.safeParse({ ...event, event: name }).success,
+      ).toBe(false);
+    },
+  );
 
   it.each([-1, 1.5])('rejects the timestamp %j', (timestamp) => {
     expect(EmailEventSchema.safeParse({ ...event, timestamp }).success).toBe(
