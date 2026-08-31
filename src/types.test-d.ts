@@ -75,8 +75,8 @@ const badDate: WaitlistSignupResponse['subscribedAt'] = new Date();
 // and only parsing rejects it. The
 // runtime tests are what pin that
 // rule.
-// @ts-expect-error 'delivered' is not one of
-// the two forwarded event types
+// @ts-expect-error 'delivered' is not the one
+// event type a caller can report
 const badEvent: EmailEvent['event'] = 'delivered';
 
 export type {};
